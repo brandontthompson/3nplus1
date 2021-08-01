@@ -1,0 +1,19 @@
+{
+  "name": "3nplus1",
+  "version": "1.0.0",
+  "description": "A visualization of the Collatz Conjecture 3n+1",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brandontthompson/3nplus1.git"
+  },
+  "author": "Brandon Thompson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/brandontthompson/3nplus1/issues"
+  },
+  "homepage": "https://github.com/brandontthompson/3nplus1#readme"
+}
