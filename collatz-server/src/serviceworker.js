@@ -1,20 +1,27 @@
 const redis = require('./redis/connection')();
-const hashset = "collatz";
-const collatz = ((seed) => {
+
+const collatz = (async(seed) => {
     let value = seed;
     let steps = 0;
+    let largest = 0;
     let sequence = [];
+
     sequence.push(value);
-    while (value > 1) {
 
-        if (value === seed && sequence.length > 1)
-            return // is a loop need to store this value as a looping value
-
+    while (value > 0) {
+        if(value > largest) largest = value;
+        // is a loop need to store this value as a looping value
+        if (value === seed && sequence.length > 1){
+            console.log(value, seed, sequence.length);
+            redis.exists("LOOP:"+largest).then((result) => {
+                if(!result) redis.set("LOOP:"+largest, seed);
+            });
+            break;
+        }
 
         // check if the redis database has the key so we can skip calculating the rest 
-        // redis.hexists(hashset, value).then((result) => {
-        //     return;
-        // }).catch()
+        if(await redis.exists("LIST:"+value).then((result) => {return result;}))
+            break;
 
         if(value % 2 == 0)
             value = Math.floor(value / 2);
@@ -26,15 +33,13 @@ const collatz = ((seed) => {
     }
 
     steps = sequence.length;
-    // possible to split the items into smaller keys so we can skip future work
-    // for(let i = 0; i < sequence.length; i++){
-    //     if(!redis.hexists(hashset, sequence[0])){
-    //         redis.hset(hashset, sequence[0], sequence);
-    //     }
-    //     sequence.pop();
-    // }
-    if(!redis.hexists(hashset, seed))
-    redis.hset(hashset, seed, sequence);
+
+    redis.exists("LIST:"+seed).then((result) => {
+        if(result) return;
+        redis.rpush("LIST:"+seed, ...sequence).then(()=>{});
+        redis.hset("COLLATZ:"+seed, "LIST", "LIST:"+seed, "STEPS", steps);
+    });
+    
 });
 
 module.exports = collatz;

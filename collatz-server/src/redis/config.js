@@ -1,4 +1,6 @@
 module.exports = {
+    port : 6379,
+    host : "127.0.0.1",
     retry_strategy: function (options) {
         if (options.error && options.error.code === "ECONNREFUSED") {
             // End reconnecting on a specific error and flush all commands with

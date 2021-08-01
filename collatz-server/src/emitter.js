@@ -1,1 +1,1 @@
-const eventEmitter = require('events');
+module.exports = new require('events').EventEmitter();
